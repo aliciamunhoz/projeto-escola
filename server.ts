@@ -1,6 +1,15 @@
 import fastify from "fastify";
-
-import crypto from "node:crypto";
+import { fastifySwagger } from "@fastify/swagger";
+import { fastifySwaggerUi } from "@fastify/swagger-ui";
+import {
+  validatorCompiler,
+  serializerCompiler,
+  type ZodTypeProvider,
+  jsonSchemaTransform,
+} from "fastify-type-provider-zod";
+import { createCourseRoute } from "./src/routes/create-course.ts";
+import { getCourseByIdRoute } from "./src/routes/get-course-by-id.ts";
+import { getCoursesRoute } from "./src/routes/get-courses.ts";
 
 const server = fastify({
   logger: {
@@ -12,51 +21,35 @@ const server = fastify({
       },
     },
   },
-});
+}).withTypeProvider<ZodTypeProvider>();
 
-const courses = [
-  { id: "1", title: "Curso de Node.js" },
-  { id: "2", title: "Curso de React" },
-  { id: "3", title: "Curso de React Native" },
-];
+if (process.env.NODE_ENV === "development") {
+  server.register(fastifySwagger, {
+    openapi: {
+      info: {
+        title: "API de Cursos",
+        description: "API para gerenciar cursos em uma plataforma educacional.",
+        version: "1.0.0",
+      },
+    },
+    transform: jsonSchemaTransform,
+  });
 
-server.get("/courses", () => {
-  return { courses };
-});
+  server.register(fastifySwaggerUi, {
+    routePrefix: "/docs",
+    uiConfig: {
+      docExpansion: "full",
+      deepLinking: false,
+    },
+  });
+}
 
-type Params = {
-  id: string;
-};
+server.register(createCourseRoute);
+server.register(getCourseByIdRoute);
+server.register(getCoursesRoute);
 
-server.get("/courses/:id", (request, reply) => {
-  const params = request.params as Params;
-
-  const courseId = params.id;
-  const course = courses.find((course) => course.id === courseId);
-
-  if (course) {
-    return { course };
-  }
-  return reply.status(404).send("Curso não encontrado");
-});
-
-type body = {
-  title: string;
-};
-
-server.post("/courses", (request, reply) => {
-  const courseId = crypto.randomUUID();
-
-  const body = request.body as body;
-  const courseTitle = body.title;
-
-  if (!courseTitle) {
-    return reply.status(422).send({ message: "Título obrigatório." });
-  }
-
-  courses.push({ id: courseId, title: courseTitle });
-  return reply.status(201).send({ courseId });
-});
+server.setSerializerCompiler(serializerCompiler);
+server.setValidatorCompiler(validatorCompiler);
 
 server.listen({ port: 3333 }).then(() => {
   console.log("HTTP server running!");
