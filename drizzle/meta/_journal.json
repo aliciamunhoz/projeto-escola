@@ -15,6 +15,27 @@
       "when": 1757800051470,
       "tag": "0001_easy_tinkerer",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1760055931847,
+      "tag": "0002_salty_bushwacker",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1760056174362,
+      "tag": "0003_curvy_colossus",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1760058095263,
+      "tag": "0004_cuddly_silver_sable",
+      "breakpoints": true
     }
   ]
 }

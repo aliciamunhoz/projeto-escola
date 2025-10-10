@@ -12,4 +12,12 @@ GET http://localhost:3333/courses
 
 ###
 
+GET http://localhost:3333/courses?search=Docker
+
+###
+
+GET http://localhost:3333/courses?orderBy=title&page=2
+
+###
+
 GET http://localhost:3333/courses/e7539c67-6865-4ac0-beed-7ffc53169af5
